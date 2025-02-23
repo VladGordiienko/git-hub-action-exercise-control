@@ -36,8 +36,8 @@ jobs:
         id: run_test
         run: npm run test
       - name: Upload test report
-      # Adding condition
-        if: steps.run_test.outcome == 'failure'
+      # Adding condition to perform upload if test failed
+        if: failure() && steps.run_test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: test-report
@@ -76,3 +76,12 @@ jobs:
         run: ls
       - name: Deploy
         run: echo "Deploying..."
+  report:
+    needs: [lint, deploy]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+         echo "Something went wrong"
+         echo "${{ github }}"    
